@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "engine".
@@ -52,5 +53,10 @@ class Engine extends \yii\db\ActiveRecord
     public function getAutos()
     {
         return $this->hasMany(Auto::className(), ['engine_id' => 'id']);
+    }
+
+    public static function getEngineList()
+    {
+        return ArrayHelper::map(Engine::find()->all(), 'id', 'name');
     }
 }

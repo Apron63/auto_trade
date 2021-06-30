@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "drive_type".
@@ -52,5 +53,10 @@ class DriveType extends \yii\db\ActiveRecord
     public function getAutos()
     {
         return $this->hasMany(Auto::className(), ['drive_type_id' => 'id']);
+    }
+
+    public static function getDriveTypeListList()
+    {
+        return ArrayHelper::map(DriveType::find()->all(), 'id', 'name');
     }
 }

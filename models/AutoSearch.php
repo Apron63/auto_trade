@@ -2,9 +2,7 @@
 
 namespace app\models;
 
-use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Auto;
 
 /**
  * AutoSearch represents the model behind the search form of `app\models\Auto`.
@@ -24,11 +22,11 @@ class AutoSearch extends Auto
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
-    {
-        // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
-    }
+//    public function scenarios()
+//    {
+//        // bypass scenarios() implementation in the parent class
+//        return Model::scenarios();
+//    }
 
     /**
      * Creates data provider instance with search query applied
@@ -45,6 +43,10 @@ class AutoSearch extends Auto
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 3,
+                'route' => '/auto'
+            ],
         ]);
 
         $this->load($params);
@@ -55,13 +57,41 @@ class AutoSearch extends Auto
             return $dataProvider;
         }
 
+        $brandId = null;
+        if (!empty($params['brandName'])) {
+            if ($brand = Brand::findOne(['name' => $params['brandName']])) {
+                $brandId = $brand->id;
+            } else {
+                $query->where('0=1');
+            }
+        }
+
+        $modelId = null;
+        if (!empty($params['modelName'])) {
+            if ($model = Model::findOne(['name' => $params['modelName']])) {
+                $modelId = $model->id;
+            } else {
+                $query->where('0=1');
+            }
+        }
+
+        $engineId = null;
+        if (!empty($urlParams['engine'])) {
+            $engineId = Engine::findOne(['name' => $urlParams['engine']]);
+        }
+
+        $driveTypeId = null;
+        if (!empty($urlParams['driveType'])) {
+            $driveTypeId = Model::findOne(['name' => $urlParams['driveType']]);
+        }
+
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'brand_id' => $this->brand_id,
-            'model_id' => $this->model_id,
-            'engine_id' => $this->engine_id,
-            'drive_type_id' => $this->drive_type_id,
+            'brand_id' => $brandId,
+            'model_id' => $modelId,
+            'engine_id' => $engineId,
+            'drive_type_id' => $driveTypeId,
         ]);
 
         return $dataProvider;

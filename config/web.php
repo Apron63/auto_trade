@@ -47,6 +47,8 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '/auto/<brandName:\w+>/<modelName:\w+>' => '/auto',
+                '/auto/<brandName:\w+>' => '/auto',
             ],
         ],
     ],

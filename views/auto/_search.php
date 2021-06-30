@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Brand;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -18,9 +19,8 @@ use yii\widgets\ActiveForm;
         ],
     ]); ?>
 
-    <?= $form->field($model, 'id') ?>
 
-    <?= $form->field($model, 'brand_id') ?>
+    <?= $form->field($model, 'brand_id')->dropDownList(Brand::getBrandList()) ?>
 
     <?= $form->field($model, 'model_id') ?>
 

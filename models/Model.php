@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "model".
@@ -67,5 +68,10 @@ class Model extends \yii\db\ActiveRecord
     public function getBrand()
     {
         return $this->hasOne(Brand::className(), ['id' => 'brand_id']);
+    }
+
+    public static function getModelList()
+    {
+        return ArrayHelper::map(Model::find()->all(), 'id', 'name');
     }
 }

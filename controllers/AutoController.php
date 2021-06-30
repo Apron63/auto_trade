@@ -2,6 +2,9 @@
 
 namespace app\controllers;
 
+use app\models\Brand;
+use app\models\Engine;
+use app\models\Model;
 use Yii;
 use app\models\Auto;
 use app\models\AutoSearch;
@@ -31,16 +34,32 @@ class AutoController extends Controller
 
     /**
      * Lists all Auto models.
+     * @param null $brandName
+     * @param null $modelName
+     * @param null $engineName
+     * @param null $driveTypeName
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($brandName = null, $modelName = null, $engineName = null, $driveTypeName = null)
     {
         $searchModel = new AutoSearch();
+
+//        $urlParams = [];
+//        if (!empty($brand)) {
+//            $urlParams['brand'] = $brand;
+//        }
+//        if (!empty($model)) {
+//            $urlParams['model'] = $model;
+//        }
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'brandId' => $brandName ? Brand::findOne(['name' => $brandName]) : null,
+            'modelId' => $modelName ? Model::findOne(['name' => $modelName]) : null,
+            'engineId' => $engineName ? Engine::findOne(['name' => $engineName]) : null,
+            'driveTypeId' => $driveTypeName ? Brand::findOne(['name' => $driveTypeName]) : null,
         ]);
     }
 
