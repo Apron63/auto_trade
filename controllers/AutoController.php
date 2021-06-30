@@ -3,11 +3,13 @@
 namespace app\controllers;
 
 use app\models\Brand;
+use app\models\DriveType;
 use app\models\Engine;
 use app\models\Model;
 use Yii;
 use app\models\Auto;
 use app\models\AutoSearch;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -44,103 +46,44 @@ class AutoController extends Controller
     {
         $searchModel = new AutoSearch();
 
-//        $urlParams = [];
-//        if (!empty($brand)) {
-//            $urlParams['brand'] = $brand;
-//        }
-//        if (!empty($model)) {
-//            $urlParams['model'] = $model;
-//        }
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $brand = Brand::findOne(['name' => $brandName]);
+        $brandId = $brand ? $brand->id : null;
+        $modelList = ArrayHelper::map(Model::find()->where(['brand_id' => $brandId])->all(), 'id', 'name');
+        $model = Model::findOne(['name' => $modelName]);
+        $modelId = $model ? $model->id : null;
+
+        if (Yii::$app->request->isAjax) {
+            return $this->renderPartial('_grid', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'brandId' => $brandId,
+                'modelId' => $modelId,
+                'modelList' => $modelList,
+                'engineId' => $engineName ? Engine::findOne(['name' => $engineName]) : null,
+                'driveTypeId' => $driveTypeName ? DriveType::findOne(['name' => $driveTypeName]) : null,
+            ]);
+        }
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'brandId' => $brandName ? Brand::findOne(['name' => $brandName]) : null,
-            'modelId' => $modelName ? Model::findOne(['name' => $modelName]) : null,
+            'brandId' => $brandId,
+            'modelId' => $modelId,
+            'modelList' => $modelList,
             'engineId' => $engineName ? Engine::findOne(['name' => $engineName]) : null,
-            'driveTypeId' => $driveTypeName ? Brand::findOne(['name' => $driveTypeName]) : null,
+            'driveTypeId' => $driveTypeName ? DriveType::findOne(['name' => $driveTypeName]) : null,
+            'title' => $this->getTitle($modelName, $brandName),
         ]);
     }
 
     /**
-     * Displays a single Auto model.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * @param null $modelName
+     * @param null $brandName
+     * @return string
      */
-    public function actionView($id)
+    private function getTitle($modelName = null, $brandName = null)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Finds the Auto model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Auto the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Auto::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
-
-    /**
-     * Creates a new Auto model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Auto();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Updates an existing Auto model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Deletes an existing Auto model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        return "Продажа новых автомобилей {$brandName} {$modelName} в Санкт-Петербурге";
     }
 }

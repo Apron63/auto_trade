@@ -44,7 +44,7 @@ class AutoSearch extends Auto
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => 3,
+                'pageSize' => 2,
                 'route' => '/auto'
             ],
         ]);
@@ -76,13 +76,17 @@ class AutoSearch extends Auto
         }
 
         $engineId = null;
-        if (!empty($urlParams['engine'])) {
-            $engineId = Engine::findOne(['name' => $urlParams['engine']]);
+        if (!empty($params['engineName'])) {
+            if ($engine = Engine::findOne(['name' => $params['engineName']])) {
+                $engineId = $engine->id;
+            }
         }
 
         $driveTypeId = null;
-        if (!empty($urlParams['driveType'])) {
-            $driveTypeId = Model::findOne(['name' => $urlParams['driveType']]);
+        if (!empty($params['driveTypeName'])) {
+            if ($driveType = DriveType::findOne(['name' => $params['driveTypeName']])) {
+                $driveTypeId = $driveType->id;
+            }
         }
 
         // grid filtering conditions

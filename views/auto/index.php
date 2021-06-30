@@ -3,10 +3,7 @@
 use app\models\Brand;
 use app\models\DriveType;
 use app\models\Engine;
-use app\models\Model;
 use yii\helpers\Html;
-use yii\grid\GridView;
-use yii\widgets\Pjax;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\AutoSearch */
@@ -14,79 +11,84 @@ use yii\widgets\Pjax;
 
 /* @var $brandId */
 /* @var $modelId */
+/* @var $modelList */
 /* @var $engineId */
 /* @var $driveTypeId */
+/* @var $title */
 
-$this->title = 'Каталог';
+$this->title = $title;
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="auto-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <!--    --><?php //Pjax::begin(); ?>
-
-
     <div class="row">
-        <?= ''//$this->render('_search', ['model' => $searchModel]);  ?>
         <?= Html::dropDownList('brand', $brandId, Brand::getBrandList(), ['prompt' => 'Бренд', 'id' => 'brand']) ?>
-        <?= Html::dropDownList('model', $modelId, Model::getModelList(), ['prompt' => 'Модель']) ?>
-        <?= Html::dropDownList('engine', $engineId, Engine::getEngineList(), ['prompt' => 'Двигатель']) ?>
-        <?= Html::dropDownList('drive_type', $driveTypeId, DriveType::getDriveTypeListList(), ['prompt' => 'Привод']) ?>
+        <?= Html::dropDownList('model', $modelId, $modelList, ['prompt' => 'Модель', 'id' => 'model']) ?>
+        <?= Html::dropDownList('engine', $engineId, Engine::getEngineList(), ['prompt' => 'Двигатель', 'id' => 'engine']) ?>
+        <?= Html::dropDownList('drive_type', $driveTypeId, DriveType::getDriveTypeListList(), ['prompt' => 'Привод', 'id' => 'drive-type']) ?>
         <br>
     </div>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-//        'filterModel' => $searchModel,
-        'columns' => [
-//            ['class' => 'yii\grid\SerialColumn'],
-
-            [
-                'attribute' => 'id',
-                'filter' => '',
-            ],
-            [
-                'attribute' => 'brand_id',
-                'value' => 'brand.name',
-                'filter' => Brand::getBrandList(),
-            ],
-            [
-                'attribute' => 'model_id',
-                'value' => 'model.name',
-                'filter' => Model::getModelList(),
-            ],
-            [
-                'attribute' => 'engine_id',
-                'value' => 'engine.name',
-                'filter' => Engine::getEngineList(),
-            ],
-            [
-                'attribute' => 'drive_type_id',
-                'value' => 'driveType.name',
-                'filter' => DriveType::getDriveTypeListList(),
-            ],
-
-            //['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
-
-    <script>
-        window.onload = function () {
-            $("#brand").on("change", function () {
-                let brandValue = $("#brand").val();
-                console.log(brandValue);
-                if (brandValue == 0) {
-                    brandName = "";
-                } else {
-                    brandName = $("#brand option:selected").text();
-                }
-                console.log(brandName);
-                window.location = "/auto/" + brandName;
-            })
-        }
-    </script>
-
-    <!--    --><?php //Pjax::end(); ?>
+    <div id="grid-content">
+        <?= $this->render('_grid', [
+            'dataProvider' => $dataProvider,
+        ]) ?>
+    </div>
 
 </div>
+
+<script>
+    window.onload = function () {
+        $("#brand").on("change", function () {
+            let brandValue = $("#brand").val();
+            if (brandValue == 0) {
+                brandName = "";
+            } else {
+                brandName = $("#brand option:selected").text();
+            }
+            window.location = "/auto/" + brandName;
+        })
+
+        $("#model").on("change", function () {
+            let modelValue = $("#model").val();
+            let brandName = $("#brand option:selected").text();
+            if (modelValue == 0) {
+                window.location = "/auto/" + brandName
+            } else {
+                modelName = $("#model option:selected").text();
+                window.location = "/auto/" + brandName + "/" + modelName;
+            }
+        })
+
+        $("#engine").on("change", function () {
+            getMoreInfo();
+        })
+
+        $("#drive-type").on("change", function () {
+            getMoreInfo();
+        })
+
+        function getMoreInfo() {
+            let brandName = $("#brand").val() != '' ? $("#brand option:selected").text() : null;
+            let modelName = $("#model").val() != '' ? $("#model option:selected").text() : null;
+            let engineName = $("#engine").val() != '' ? $("#engine option:selected").text() : null;
+            let driveTypeName = $("#drive-type").val() != '' ? $("#drive-type option:selected").text() : null;
+            $.ajax({
+                url: "/auto",
+                data: {
+                    brandName: brandName,
+                    modelName: modelName,
+                    engineName: engineName,
+                    driveTypeName: driveTypeName
+                }
+            }).done(function (data) {
+                $("#grid-content").html(data);
+            }).fail(function (data) {
+                console.log(data);
+            });
+        }
+    }
+</script>

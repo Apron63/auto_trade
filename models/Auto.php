@@ -50,10 +50,10 @@ class Auto extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'brand_id' => 'Brand ID',
-            'model_id' => 'Model ID',
-            'engine_id' => 'Engine ID',
-            'drive_type_id' => 'Drive Type ID',
+            'brand_id' => 'Бренд',
+            'model_id' => 'Модель',
+            'engine_id' => 'Двигатель',
+            'drive_type_id' => 'Привод',
         ];
     }
 
