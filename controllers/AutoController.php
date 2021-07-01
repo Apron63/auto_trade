@@ -7,15 +7,13 @@ use app\models\DriveType;
 use app\models\Engine;
 use app\models\Model;
 use Yii;
-use app\models\Auto;
 use app\models\AutoSearch;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * AutoController implements the CRUD actions for Auto model.
+ * AutoController
  */
 class AutoController extends Controller
 {

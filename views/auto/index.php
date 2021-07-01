@@ -25,10 +25,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <div class="row">
-        <?= Html::dropDownList('brand', $brandId, Brand::getBrandList(), ['prompt' => 'Бренд', 'id' => 'brand']) ?>
-        <?= Html::dropDownList('model', $modelId, $modelList, ['prompt' => 'Модель', 'id' => 'model']) ?>
-        <?= Html::dropDownList('engine', $engineId, Engine::getEngineList(), ['prompt' => 'Двигатель', 'id' => 'engine']) ?>
-        <?= Html::dropDownList('drive_type', $driveTypeId, DriveType::getDriveTypeListList(), ['prompt' => 'Привод', 'id' => 'drive-type']) ?>
+        <?= Html::dropDownList('brand', $brandId, Brand::getBrandList(),
+            ['prompt' => 'Бренд', 'id' => 'brand']) ?>
+        <?= Html::dropDownList('model', $modelId, $modelList,
+            ['prompt' => 'Модель', 'id' => 'model']) ?>
+        <?= Html::dropDownList('engine', $engineId, Engine::getEngineList(),
+            ['prompt' => 'Двигатель', 'id' => 'engine']) ?>
+        <?= Html::dropDownList('drive_type', $driveTypeId, DriveType::getDriveTypeListList(),
+            ['prompt' => 'Привод', 'id' => 'drive-type']) ?>
         <br>
     </div>
 
@@ -86,6 +90,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             }).done(function (data) {
                 $("#grid-content").html(data);
+                let url = new URL(document.location.href);
+                if (engineName) {
+                    url.searchParams.set('engineName', engineName);
+                } else {
+                    url.searchParams.delete('engineName');
+                }
+                if (driveTypeName) {
+                    url.searchParams.set('driveTypeName', driveTypeName);
+                } else {
+                    url.searchParams.delete('driveTypeName');
+                }
+                window.history.pushState("any", document.title, url);
             }).fail(function (data) {
                 console.log(data);
             });
